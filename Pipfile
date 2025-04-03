@@ -1,0 +1,17 @@
+[packages]
+ipython = "*"
+jupyterlab = "*"
+matplotlib = "*"
+mkdocs = "*"
+notebook = "*"
+numpy = "*"
+pandas = "*"
+pip = "*"
+pytest = "*"
+python-dotenv = "*"
+ruff = "*"
+scikit-learn = "*"
+"cooking_seasonally" ={editable = true, path = "."}
+
+[requires]
+python_version = "3.12"

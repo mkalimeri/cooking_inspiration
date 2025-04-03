@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "cooking_seasonally"
+version = "0.0.1"
+description = "Get recipe recommendations based on seasonal ingredients"
+authors = [
+  { name = "Maria Kalimeri" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = "~=3.12.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["cooking_seasonally"]
+include = ["pyproject.toml", "cooking_seasonally/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["cooking_seasonally"]
+force-sort-within-sections = true
+
