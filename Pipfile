@@ -12,6 +12,14 @@ python-dotenv = "*"
 ruff = "*"
 scikit-learn = "*"
 "cooking_seasonally" ={editable = true, path = "."}
+bs4 = "*"
+requests = "*"
+selenium = "*"
+webdriver-manager = "*"
+ipykernel = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.12"
+
+[dev-packages]

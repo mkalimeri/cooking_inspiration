@@ -1,0 +1,3 @@
+# Webscrapping
+
+https://brightdata.com/blog/how-tos/scrape-dynamic-websites-python
