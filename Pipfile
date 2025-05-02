@@ -15,7 +15,7 @@ scikit-learn = "*"
 bs4 = "*"
 requests = "*"
 selenium = "*"
-webdriver-manager = "*"
+webdriver_manager = "*"
 ipykernel = "*"
 pytz = "*"
 
