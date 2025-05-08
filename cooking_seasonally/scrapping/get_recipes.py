@@ -1,10 +1,9 @@
 import logging
-from pathlib import Path
 import json
 import time
+from typing import List
 
 from bs4 import BeautifulSoup
-import pandas as pd
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -13,8 +12,13 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import NoSuchElementException
 
+from cooking_seasonally.helpers.recipe import Recipe
 
-def get_recipes(driver, link, recipes_dict):
+
+def get_recipes_from_web(driver: webdriver, link: str, recipe_list: List[Recipe, None]):
+    # Retrieve recipe information from the webdriver
+    # This method is specisc to the www.ottolenghi.com recipe pages
+
     next_page_exists = True
 
     print(f"Getting recipes from {link}")
@@ -34,8 +38,9 @@ def get_recipes(driver, link, recipes_dict):
             name = recipe.find_element(By.TAG_NAME, "span").text
             url = recipe.get_attribute("href")
             page = requests.get(url)
-            recipes_dict[name] = {"url": url, "ingredients": get_ingredients(page)}
-
+            recipe_list.append(
+                Recipe(name=name, url=url, ingredients=get_ingredients_from_web(page))
+            )
         try:
             # Get "load more" button to get to the next page
             button = recipes_page.find_element(By.CLASS_NAME, "c-button")
@@ -47,10 +52,12 @@ def get_recipes(driver, link, recipes_dict):
             continue
         else:
             driver.execute_script("arguments[0].click();", button)
-            time.sleep(5)
+            time.sleep(15)
 
 
-def get_ingredients(page):
+def get_ingredients_from_web(page: requests.Response) -> List[str]:
+    # Retrieve the ingredients of a recipe on a static page
+    # This method is specisc to the www.ottolenghi.com recipe pages
     ingredients = [
         str(ingredient.contents[0])
         for ingredient in BeautifulSoup(page.text, "html.parser").find_all("td", class_=None)
@@ -59,44 +66,29 @@ def get_ingredients(page):
     return ingredients
 
 
-def scrape_urls(links, jsn_file):
+def scrape_url(link: str, jsn_file: str) -> List[Recipe]:
+    # If the provided json file does not exist, scrap recipe information from a given page
+    # Save this information in the provided json file
+
     # If the json file exists, we do not get the data from the website again
     if jsn_file.exists():
-        logging.info("Data has already been downloaded")
-        logging.info("Downloading json file")
-        with open(jsn_file, "rb") as f:
-            all_recipes_dict = json.load(f)
+        logging.info("Data already exists")
+        print("Data already exists")
     # If not, get the data from the website
     else:
-        all_recipes_dict = {}
-
         # Installing webdriver
         logging.info("Installing Chrome webdriver")
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
         # load the web page
-        for link in links:
-            get_recipes(driver, link, all_recipes_dict)
+        all_recipes_list = []
+        get_recipes_from_web(driver, link, all_recipes_list)
+
+        with open(jsn_file, "w") as f:
+            json.dump(all_recipes_list, f, default=Recipe.encode_recipe)
 
         driver.quit()
+
         logging.info("Finished! ")
-        with open(jsn_file, "w") as f:
-            json.dump(all_recipes_dict, f)
 
-    return all_recipes_dict
-
-
-if __name__ == "__main__":
-    BASE_DIR = Path(__file__).parent.parent.parent
-
-    # URL of the website to scrape
-    links = [
-        "https://ottolenghi.co.uk//pages/mains-recipes",
-        'https://ottolenghi.co.uk/pages/sides-recipes',
-        'https://ottolenghi.co.uk/pages/soup-recipes',
-        'https://ottolenghi.co.uk/pages/salad-recipes',
-    ]
-
-    jsn_file = Path(BASE_DIR) / "data/interim/ottolenghi_recipes.json"
-
-    all_recipes_dict = scrape_urls(links, jsn_file)
+    return all_recipes_list
