@@ -1,5 +1,6 @@
 import logging
 import json
+from pathlib import Path
 import time
 from typing import List
 
@@ -15,7 +16,7 @@ from selenium.common.exceptions import NoSuchElementException
 from cooking_seasonally.helpers.recipe import Recipe
 
 
-def get_recipes_from_web(driver: webdriver, link: str, recipe_list: List[Recipe, None]):
+def get_recipes_from_web(driver: webdriver, link: str, recipe_list: List[Recipe | None]):
     # Retrieve recipe information from the webdriver
     # This method is specisc to the www.ottolenghi.com recipe pages
 
@@ -73,7 +74,7 @@ def scrape_url(link: str, jsn_file: str) -> List[Recipe]:
     # If the json file exists, we do not get the data from the website again
     if jsn_file.exists():
         logging.info("Data already exists")
-        print("Data already exists")
+        print(f"{jsn_file}: Data already exists, no action taken")
     # If not, get the data from the website
     else:
         # Installing webdriver
@@ -91,4 +92,21 @@ def scrape_url(link: str, jsn_file: str) -> List[Recipe]:
 
         logging.info("Finished! ")
 
-    return all_recipes_list
+        return all_recipes_list
+
+if __name__ == "__main__":
+    BASE_DIR = Path(__file__).parent.parent.parent
+
+    # URL of the website to scrape
+
+    links = {
+        "mains": "https://ottolenghi.co.uk//pages/mains-recipes",
+        "sides": "https://ottolenghi.co.uk/pages/sides-recipes",
+        "soup": "https://ottolenghi.co.uk/pages/soup-recipes",
+        "salad": "https://ottolenghi.co.uk/pages/salad-recipes",
+    }
+
+    for course, link in links.items():
+        jsn_file = Path(BASE_DIR) / f"data/raw/ottolenghi_recipes_{course}.json"
+
+        all_recipes_list = scrape_url(link, jsn_file)
