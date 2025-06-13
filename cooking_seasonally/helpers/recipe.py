@@ -21,7 +21,11 @@ class Recipe:
     def encode_recipe(cls, obj):
         # Encode a Recipe instance so it can be saved as a json dictionary
         if isinstance(obj, cls):
-            return {"name": obj.name, "url": obj.url, "ingredients": obj.ingredients}
+            return {
+                "name": obj.name,
+                "url": obj.url,
+                "ingredients": obj.ingredients,
+                }
         return obj
 
     @classmethod

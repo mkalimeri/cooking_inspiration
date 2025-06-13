@@ -18,6 +18,7 @@ selenium = "*"
 webdriver_manager = "*"
 ipykernel = "*"
 pytz = "*"
+spacy = "*"
 
 [requires]
 python_version = "3.12"

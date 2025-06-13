@@ -9,15 +9,15 @@ from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from .recipe import Recipe
-
+from cooking_seasonally.helpers.utils import LIST_TO_IGNORE
 
 def to_lower(txt: str) -> str:
-    # Convert
+    # Convert to lower
     return txt.lower()
 
 
 def remove_characters(characters: str, txt: str) -> str:
-    # Remove characters in characters from txt
+    # Remove characters in 'characters' from txt
     translator = str.maketrans("", "", characters)
     return txt.translate(translator)
 
@@ -57,14 +57,26 @@ def stemming(words_lst: List[str]) -> List[str]:
     return [stemmer.stem(word) for word in words_lst]
 
 
+def ignore_item(list_to_ignore: List[str], words: str) -> bool:
+    # Returns true is string 'words' contains one of the words in list_to_ignore
+    for x in list_to_ignore:
+        if x in words.split():
+            return True
+    return False
+
+def remove_item_if_in_list(list_of_items: List[str], list_to_ignore: List[str]) -> List[str]:
+    # Checks if item in list_of_items contains string from list_to_ignore and removes it, if it does
+    return [item for item in list_of_items if not ignore_item(list_to_ignore, item)]
+
+
 def preprocess_ingredients(words_lst: List[str]) -> List[str]:
-    # Use the mothods defined above to proprocess a list of words (use stemming)
+    # Use the mothods defined above to proprocess a list of words
 
     # Order of processing per word in list: make lowercase, remove punctuation symbols, remove blank spaces, remove digits
     l = [
         remove_numbers(remove_blank(remove_characters(string.punctuation, to_lower(txt))))
         for txt in words_lst
-    ]  # remove empty spaces and punctuation
-    l = list(filter(None, l))  # remove empty strings from list
-    tokens = [remove_stopwords(tokenize(txt)) for txt in l]  # Remove stopwords
-    return [stemming(lst) for lst in tokens]  # perform stemming
+    ]
+    return list(filter(None, l))  # remove empty strings from list
+    # tokens = [remove_stopwords(tokenize(txt)) for txt in l]  # Remove stopwords
+    # return [stemming(lst) for lst in tokens]  # perform stemming
