@@ -1,61 +1,15 @@
-# cooking_seasonally
+*Ongoing project!*
 
-<a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
-    <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
-</a>
+**Recipe recommendation machine using SpaCy**
 
-Get recipe recommendations based on ingredients
+Implementation of a recipe recommendation machine, I will take the following steps
 
-## Project Organization
+1. Scrap the web for recipes (I used Beautifulsoup and Selenium to scrappe recipes of www.ottolenghi.com)
+Information saved: recipe name, link and ingredients. I might later add this information from a Kaggle dataset that contains recipes from other websites (I used a subset to train the model in the next step)
 
-```
-├── LICENSE            <- Open-source license if one is chosen
-├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
-│
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
-│
-├── models             <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
-│
-├── pyproject.toml     <- Project configuration file with package metadata for 
-│                         cooking_seasonally and configuration for tools like black
-│
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
-│
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
-│
-├── setup.cfg          <- Configuration file for flake8
-│
-└── cooking_seasonally   <- Source code for use in this project.
-    │
-    ├── __init__.py             <- Makes cooking_seasonally a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
-    │
-    └── plots.py                <- Code to create visualizations
-```
+2. Perform NLP to only keep "main" ingredients.
+My definition of main ingredients is fresh produce, meat and some staples, such as pasta/rice, canned food (eg. olives, anchovies etc). Spices and oil were not considered main ingredients.
+To do this, I trained a NER (Named Entity Recognition) SpaCy pipeline.
 
---------
-
+3. (Ongoing) Recommend recipes based on available ingredients, as provided by the user
+I am exploring options to find the best recommendations, including SpaCy pretrained models using word vectors
