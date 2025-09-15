@@ -9,7 +9,6 @@ from nltk.stem.porter import PorterStemmer
 from nltk.tokenize import word_tokenize
 
 from .recipe import Recipe
-from cooking_seasonally.helpers.utils import LIST_TO_IGNORE
 
 def to_lower(txt: str) -> str:
     # Convert to lower
@@ -23,7 +22,7 @@ def remove_characters(characters: str, txt: str) -> str:
 
 
 def tokenize(txt: str) -> List[str]:
-    # Returns the indivisuals token words of a string
+    # Returns the indivisual token words of a string
     return word_tokenize(txt)
 
 

@@ -186,3 +186,8 @@ cython_debug/
 .pypirc
 
 cooking_seasonally_env/
+
+# models
+models/NER/model-best/*
+models/NER/model-last/*
+
