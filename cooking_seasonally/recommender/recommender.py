@@ -9,7 +9,6 @@ import pandas as pd
 import spacy
 import streamlit as st
 
-from cooking_seasonally.helpers.utils import BASE_DIR, data_path, Recipe
 
 def jaccard_similarity(list_1: List, list_2: List) -> float:
     '''
