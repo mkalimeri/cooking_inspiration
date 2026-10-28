@@ -191,3 +191,6 @@ cooking_seasonally_env/
 models/NER/model-best/*
 models/NER/model-last/*
 
+# duckdb
+data/*.duckdb
+
