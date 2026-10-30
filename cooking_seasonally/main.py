@@ -26,7 +26,6 @@ recipes_df = recipes_df.reset_index(drop=True)
 
 url = recipes_df.iloc[0]['url']
 st.write(f"How about [{recipes_df.iloc[0]['name']}](%s)" % url)
-st.write(recipes_df.iloc[0])
 
 st.write(f"Other options are")
 for r in np.arange(1,6):

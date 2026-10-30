@@ -1,3 +1,16 @@
 # Webscrapping
 
 https://brightdata.com/blog/how-tos/scrape-dynamic-websites-python
+
+# Recipes 
+https://www.kaggle.com/datasets/thedevastator/better-recipes-for-a-better-life
+https://www.kaggle.com/datasets/wilmerarltstrmberg/recipe-dataset-over-2m
+
+# NER/NLP
+https://www.getyourguide.careers/posts/building-custom-ner-models-with-spacy-to-enhance-travel-product-inventory
+https://medium.com/data-science/how-to-mass-identify-recurring-textual-features-e3e98c4b0309
+https://arxiv.org/html/2408.07706v1
+https://medium.com/@harsh.vardhan7695/a-comprehensive-guide-to-word-embeddings-in-nlp-ee3f9e4663ed
+https://towardsdatascience.com/clustering-product-names-with-python-part-1-f9418f8705c8/
+
+# Streamlit deployment https://what-to-cook-today.streamlit.app/
