@@ -9,6 +9,8 @@ SQL_DIR = PROJECT_ROOT / "sql"
 SQL_FILES = [
     "01_staging_raw_recipes.sql",
     "02_recipes.sql",
+    "03_categories.sql",
+    "04_recipe_categories.sql",
 ]
 
 

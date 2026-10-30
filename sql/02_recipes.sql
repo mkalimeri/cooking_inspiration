@@ -1,3 +1,5 @@
+-- grain: one row per url/name 
+
 CREATE OR REPLACE TABLE recipes AS
 SELECT
     url AS recipe_id,
