@@ -112,3 +112,187 @@ def test_all_relationships_exist_in_bridge(db):
     """).fetchone()[0]
 
     assert result == 0
+
+def test_recipe_ingredient_composite_keys_are_unique(db):
+    duplicate_count = db.execute("""
+        SELECT COUNT(*)
+        FROM (
+            SELECT recipe_id, ingredient_position
+            FROM recipe_ingredients
+            GROUP BY recipe_id, ingredient_position
+            HAVING COUNT(*) > 1
+        )
+    """).fetchone()[0]  # ty: ignore[not-subscriptable]
+
+    assert duplicate_count == 0
+
+def test_recipe_ingredient_no_blank_ingredients(db):
+    invalid_count = db.execute("""
+        SELECT COUNT(*)
+        FROM recipe_ingredients
+        WHERE ingredient_text IS NULL
+        OR TRIM(
+            ingredient_text,
+            CHR(32) || CHR(9) || CHR(10) || CHR(13)
+        ) = ''
+    """).fetchone()[0]
+
+    assert invalid_count == 0
+
+def test_all_current_recipes_have_ingredients(db):
+    missing_recipes = db.execute("""
+        SELECT COUNT(*)
+        FROM recipes as r
+        LEFT JOIN recipe_ingredients as ri
+        ON r.recipe_id = ri.recipe_id
+        WHERE ri.recipe_id IS NULL
+    """).fetchone()[0]
+
+    assert missing_recipes == 0
+
+def test_recipe_ingredients_reference_existing_recipes(db):
+    missing_recipes = db.execute("""
+        SELECT COUNT(*)
+        FROM recipe_ingredients as ri
+        LEFT JOIN recipes as r
+        ON ri.recipe_id = r.recipe_id
+        WHERE r.recipe_id IS NULL
+    """).fetchone()[0]
+
+    assert missing_recipes == 0
+
+
+def test_all_source_ingredients_are_preserved(db):
+    missing_count = db.execute("""
+        WITH unique_recipes AS (
+            SELECT DISTINCT
+                url,
+                ingredients
+            FROM staging_raw_recipes
+        ),
+        expected_ingredients AS (
+            SELECT
+                url AS recipe_id,
+                position AS ingredient_position,
+                TRIM(
+                    ingredient,
+                    CHR(32) || CHR(9) || CHR(10) || CHR(13)
+                ) AS ingredient_text
+            FROM unique_recipes,
+                 UNNEST(ingredients)
+                     WITH ORDINALITY AS t(ingredient, position)
+            WHERE TRIM(
+                ingredient,
+                CHR(32) || CHR(9) || CHR(10) || CHR(13)
+            ) <> ''
+        )
+        SELECT COUNT(*)
+        FROM (
+            SELECT
+                recipe_id,
+                ingredient_position,
+                ingredient_text
+            FROM expected_ingredients
+
+            EXCEPT
+
+            SELECT
+                recipe_id,
+                ingredient_position,
+                ingredient_text
+            FROM recipe_ingredients
+        )
+    """).fetchone()[0]
+
+    assert missing_count == 0
+
+def test_no_outside_ingredients_added(db):
+    missing_count = db.execute("""
+        WITH unique_recipes AS (
+            SELECT DISTINCT
+                url,
+                ingredients
+            FROM staging_raw_recipes
+        ),
+        expected_ingredients AS (
+            SELECT
+                url AS recipe_id,
+                position AS ingredient_position,
+                TRIM(
+                    ingredient,
+                    CHR(32) || CHR(9) || CHR(10) || CHR(13)
+                ) AS ingredient_text
+            FROM unique_recipes,
+                 UNNEST(ingredients)
+                     WITH ORDINALITY AS t(ingredient, position)
+            WHERE TRIM(
+                ingredient,
+                CHR(32) || CHR(9) || CHR(10) || CHR(13)
+            ) <> ''
+        )
+        SELECT COUNT(*)
+        FROM (
+            SELECT
+                recipe_id,
+                ingredient_position,
+                ingredient_text
+            FROM recipe_ingredients
+
+            EXCEPT
+
+            SELECT
+                recipe_id,
+                ingredient_position,
+                ingredient_text
+            FROM expected_ingredients
+        )
+    """).fetchone()[0]
+
+    assert missing_count == 0
+
+def test_recipe_ingredients_with_duplicates_and_blanks():
+    # 1. Create a fresh temporary database
+    with duckdb.connect(":memory:") as con:
+
+        # 2. Create staging and insert synthetic records
+        con.execute("""
+            CREATE TABLE staging_raw_recipes (
+                url VARCHAR,
+                ingredients VARCHAR[]
+            )
+        """)
+
+        recipe = (
+            "recipe-A",
+            [" ", " olive oil ", "\n", "olive oil", "chickpeas"]
+        )
+
+        con.execute(
+            "INSERT INTO staging_raw_recipes VALUES (?, ?)",
+            recipe
+        )
+        con.execute(
+            "INSERT INTO staging_raw_recipes VALUES (?, ?)",
+            recipe
+        )
+
+        # 3. Execute the actual transformation SQL
+        sql = Path("sql/05_recipe_ingredients.sql").read_text()
+        con.execute(sql)
+
+        # 4. Retrieve actual results
+        actual = con.execute("""
+            SELECT ingredient_position, ingredient_text
+            FROM recipe_ingredients
+            WHERE recipe_id = 'recipe-A'
+            ORDER BY ingredient_position
+        """).fetchall()
+
+        # 5. Define expected results
+        expected = [
+            (2, "olive oil"),
+            (4, "olive oil"),
+            (5, "chickpeas"),
+        ]
+
+        assert actual == expected

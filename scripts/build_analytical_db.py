@@ -11,6 +11,7 @@ SQL_FILES = [
     "02_recipes.sql",
     "03_categories.sql",
     "04_recipe_categories.sql",
+    "05_recipe_ingredients.sql",
 ]
 
 
