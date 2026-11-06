@@ -3,7 +3,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from scripts.build_analytical_db import build_database
+from scripts.build_analytical_db import SAMPLE_DATA_DIR, build_database
 
 
 @pytest.fixture(scope="module")
@@ -12,7 +12,7 @@ def db(tmp_path_factory):
     temp_dir = tmp_path_factory.mktemp("analytical_db")
     db_path = temp_dir / "test_recipes.duckdb"
 
-    build_database(db_path)
+    build_database(db_path, data_dir=SAMPLE_DATA_DIR)
 
     with duckdb.connect(str(db_path), read_only=True) as con:
         yield con
@@ -68,7 +68,6 @@ def test_recipe_category_pairs_are_unique(db):
     total_rows, distinct_pairs = result
 
     assert total_rows == distinct_pairs
-    assert total_rows == 470
 
 def test_recipe_categories_reference_existing_recipes(db):
     result = db.execute("""

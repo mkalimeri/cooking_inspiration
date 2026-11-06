@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Chickpea salad",
+    "url": "https://example.com/recipes/chickpea-salad",
+    "ingredients": [
+      " cooked chickpeas, drained",
+      " cucumber, diced",
+      " cherry tomatoes, halved",
+      " red onion, finely sliced",
+      " parsley leaves, chopped",
+      " lemon juice",
+      " olive oil",
+      " salt and black pepper"
+    ]
+  },
+  {
+    "name": "Herb potatoes",
+    "url": "https://example.com/recipes/herb-potatoes",
+    "ingredients": [
+      " baby potatoes, halved",
+      " olive oil",
+      " rosemary leaves",
+      " thyme leaves",
+      " olive oil",
+      " garlic cloves, crushed",
+      " salt and black pepper"
+    ]
+  }
+]

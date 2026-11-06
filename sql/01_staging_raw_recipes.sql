@@ -11,7 +11,7 @@ SELECT
     url,
     ingredients
 FROM read_json_auto(
-    'data/raw/ottolenghi_recipes_*.json',
+    $source_pattern,
     format = 'array',
     filename = true
 );
