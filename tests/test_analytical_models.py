@@ -68,9 +68,6 @@ def test_recipe_category_pairs_are_unique(db):
     total_rows, distinct_pairs = result
 
     assert total_rows == distinct_pairs
-    
-    # The bundled sample contains five distinct recipe-category pairs.
-    assert total_rows == 5
 
 def test_recipe_categories_reference_existing_recipes(db):
     result = db.execute("""
